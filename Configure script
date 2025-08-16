@@ -1,0 +1,1 @@
+Add an executable configure script that checks for essential build tools (gcc, sdl2-config, pkg-config) and libraries (SDL2_ttf, fftw3), providing installation hints when any are missing
