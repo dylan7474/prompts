@@ -1,0 +1,11 @@
+Testing a PR
+
+git clone https://github.com/dylan7474/morseGen.git
+cd morseGen
+git checkout codex/add-environment-configuration-routing
+git fetch origin
+git branch -r
+# This will list all the branches
+git checkout -b codex/add-environment-configuration-routing BranchName
+# EG git checkout -b codex/add-environment-configuration-routing origin/codex/add-environment-configuration-routing
+
