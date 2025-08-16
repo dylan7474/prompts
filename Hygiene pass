@@ -1,9 +1,9 @@
 Add project docs and license:
 
 1) Create README.md that describes:
-   - What the game is (Moria-like dungeon crawler).
+   - What the application is
    - How to build on Linux (make) and Windows (make -f Makefile.win).
-   - Basic controls (movement, wait, descend stairs, quit).
+   - Basic controls 
    - A short roadmap section.
 
 2) Add LICENSE with MIT License (copyright: Dylan Jones, 2025).
