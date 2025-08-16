@@ -10,5 +10,7 @@ Add project docs and license:
 
 3) Verify both Makefiles still build: no code changes, just docs and license.
 
+4) Add an executable configure script that checks for essential build tools (gcc, sdl2-config, pkg-config) and libraries (SDL2_ttf, fftw3), providing installation hints when any are missing
+
 Commit to a new branch docs/readme-license and open a PR titled:
 docs: add README with build instructions + MIT LICENSE
