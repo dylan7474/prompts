@@ -1,11 +1,15 @@
 Testing a PR
-
+# Clone the main repo
 git clone https://github.com/dylan7474/morseGen.git
 cd morseGen
+# make a new local branch from that remote
 git checkout codex/add-environment-configuration-routing
+# update your remote-tracking branches
 git fetch origin
-git branch -r
 # This will list all the branches
+git branch -r
+
+# git checkout -b <local-branch-name> <remote>/<remote-branch-name>
 git checkout -b codex/add-environment-configuration-routing BranchName
 # EG git checkout -b codex/add-environment-configuration-routing origin/codex/add-environment-configuration-routing
 
