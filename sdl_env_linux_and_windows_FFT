@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+HOST=x86_64-w64-mingw32
+PREFIX=/usr/${HOST}
+JOBS="$(nproc)"
+
+echo "== Updating apt and installing base packages =="
+apt-get update
+apt-get install -y \
+  build-essential make gcc g++ pkg-config ${HOST} \
+  libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
+  libcurl4-openssl-dev libfftw3-dev \
+  ca-certificates git wget xxd unzip wine  # tools for assets & testing .exe
+
+# Optional: Inform7 (interactive fiction) — set INSTALL_INFORM7=1 to enable
+# (from attached guide) :contentReference[oaicite:1]{index=1}
+if [[ "${INSTALL_INFORM7:-0}" = "1" ]]; then
+  echo "== Installing Inform7 (optional) =="
+  cd /tmp
+  wget -q http://emshort.com/inform-app-archive/6M62/I7_6M62_Linux_all.tar.gz
+  tar -xzf I7_6M62_Linux_all.tar.gz
+  cd inform7-6M62
+  ./install-inform7.sh
+  echo 'export PATH=$PATH:/usr/local/share/inform7/Compilers' >> /etc/profile.d/inform7.sh
+fi
+
+echo "== Preparing Windows cross-compile SDL2 core =="
+cd /tmp
+wget -q https://github.com/libsdl-org/SDL/releases/download/release-2.30.4/SDL2-2.30.4.tar.gz
+tar -xzf SDL2-2.30.4.tar.gz
+cd SDL2-2.30.4
+# Build SDL2 for MinGW; static preferred where possible
+./configure --host="${HOST}" --prefix="${PREFIX}" --disable-shared --enable-static
+make -j"${JOBS}"
+make install
+cd /tmp
+
+echo "== Installing SDL2_image, SDL2_mixer, SDL2_ttf for MinGW =="
+# Use the official MinGW “-devel” bundles as per attached guide :contentReference[oaicite:2]{index=2}
+wget -q https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.2/SDL2_image-devel-2.8.2-mingw.tar.gz
+wget -q https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.8.1/SDL2_mixer-devel-2.8.1-mingw.tar.gz
+wget -q https://github.com/libsdl-org/SDL_ttf/releases/download/release-2.22.0/SDL2_ttf-devel-2.22.0-mingw.tar.gz
+
+for a in *.tar.gz; do tar -xzf "$a"; done
+cp -r SDL2_image*/${HOST}/* "${PREFIX}/" || true
+cp -r SDL2_mixer*/${HOST}/* "${PREFIX}/" || true
+cp -r SDL2_ttf*/${HOST}/*   "${PREFIX}/" || true
+
+echo "== Building static libcurl for MinGW =="
+cd /tmp
+wget -q https://curl.se/download/curl-8.8.0.tar.gz
+tar -xzf curl-8.8.0.tar.gz
+cd curl-8.8.0
+# Static build and WinTLS (Schannel), ldap disabled (per guide) :contentReference[oaicite:3]{index=3}
+./configure --host="${HOST}" --prefix="${PREFIX}" \
+  --with-schannel --disable-shared --enable-static \
+  --disable-ldap --disable-ldaps
+make -j"${JOBS}"
+make install
+cd /tmp
+
+echo "== Building static FFTW3 for MinGW =="
+wget -q http://www.fftw.org/fftw-3.3.10.tar.gz
+tar -xzf fftw-3.3.10.tar.gz
+cd fftw-3.3.10
+./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared
+make -j"${JOBS}"
+make install
+cd /tmp
+
+echo "== Configuring cross-compile environment variables =="
+# Help pkg-config & toolchains locate MinGW includes/libs
+cat >/etc/profile.d/cross-mingw.sh <<EOF
+export ${HOST}_PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
+export PKG_CONFIG_PATH=\${${HOST}_PKG_CONFIG_PATH}:\${PKG_CONFIG_PATH:-}
+EOF
+# Make immediately available to current shell (non-login)
+# shellcheck disable=SC1091
+source /etc/profile.d/cross-mingw.sh || true
+
+cat <<'TIP'
+
+Setup complete!
+
+Notes (from your environment guide):
+- For Linux builds:
+    gcc -Wall -O2 `sdl2-config --cflags` -I/usr/include/fftw3 main.c \
+        -o game `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lcurl -lfftw3 -lm
+- For Windows cross-builds (example flags):
+    x86_64-w64-mingw32-gcc -Wall -O2 -DCURL_STATICLIB -I/usr/${HOST}/include/SDL2 -I/usr/${HOST}/include \
+        main.c -o game.exe \
+        -L/usr/${HOST}/lib \
+        -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf \
+        -lfftw3 -lcurl -lbcrypt -lpthread -lws2_32 -lcrypt32 -lwldap32 \
+        -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion -lsetupapi -lrpcrt4 -lm -mwindows -static
+- Embed assets with xxd if you want fully self-contained binaries:
+    xxd -i your_image.png > image_data.h
+    xxd -i your_font.ttf  > font_data.h
+TIP
+
+echo "== Build environment ready for Linux + Windows cross-compilation =="
