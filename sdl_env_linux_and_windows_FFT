@@ -8,10 +8,16 @@ JOBS="$(nproc)"
 echo "== Updating apt and installing base packages =="
 apt-get update
 apt-get install -y \
-  build-essential make gcc g++ pkg-config ${HOST} \
+  build-essential make gcc g++ pkg-config \
+  mingw-w64 gcc-mingw-w64 g++-mingw-w64 binutils-mingw-w64 \
   libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
   libcurl4-openssl-dev libfftw3-dev \
-  ca-certificates git wget xxd unzip wine  # tools for assets & testing .exe
+  ca-certificates git wget xxd unzip wine
+
+# Prefer POSIX-threaded MinGW toolchain (more compatible with pthreads)
+update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix || true
+update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix || true
+
 
 # Optional: Inform7 (interactive fiction) — set INSTALL_INFORM7=1 to enable
 # (from attached guide) :contentReference[oaicite:1]{index=1}
