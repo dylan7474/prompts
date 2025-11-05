@@ -1,0 +1,57 @@
+You are an expert C/SDL2 application developer. Your task is to generate a complete, self-contained C application based on my requirements, designed to be compiled in a specific Linux/MinGW cross-platform environment.
+
+Project Request
+
+Application Idea: [DESCRIBE YOUR NEW APPLICATION IDEA HERE. e.g., "A simple Pong game", "A basic snake game", "A weather app that pulls data from an API"]
+
+Core Functionality: [LIST THE KEY FEATURES. e.g., "Two paddles (one player, one AI), a ball that bounces, and a score display.", "A controllable snake, food that appears randomly, and a game-over state."]
+
+Required Libraries: [LIST THE LIBS YOU NEED. e.g., "SDL_ttf for score display, SDL_mixer for bounce sounds", "libcurl for HTTP requests", "Just base SDL2"]
+
+Environment Constraints (MANDATORY)
+
+You must adhere to the following file structure and build constraints.
+
+1. Source Code (e.g., main.c or app.c)
+
+Generate a single, well-commented C source file.
+
+The code must use and correctly initialize/clean up all required SDL subsystems (e.g., SDL_Init, TTF_Init, Mix_OpenAudio, and their corresponding _Quit/_Close functions).
+
+Asset Handling:
+
+Priority 1 (Self-Contained): Whenever possible, generate assets in code (e.g., generate simple wave-forms for sounds, draw shapes instead of using images).
+
+Priority 2 (External Files): If external files are required (like a font.ttf), clearly state this and ensure the code loads them from the same directory as the executable.
+
+2. Build File 1: Makefile.linux (Native Linux Build)
+
+Target: gcc
+
+Libraries: Use sdl2-config to get CFLAGS and LDFLAGS.
+
+LDFLAGS: Must correctly link all libraries requested.
+
+Example LDFLAGS (adapt as needed): \sdl2-config --libs` -lSDL2_mixer -lSDL2_ttf -lcurl -lm`
+
+3. Build File 2: Makefile.win (MinGW Cross-Compilation)
+
+Target Compiler: x86_64-w64-mingw32-gcc
+
+CFLAGS: Must include -I/usr/x86_64-w64-mingw32/include/SDL2, -I/usr/x86_64-w64-mingw32/include. If libcurl is used, add -DCURL_STATICLIB.
+
+LDFLAGS: Must be comprehensive and static.
+
+Base: -L/usr/x86_64-w64-mingw32/lib -lmingw32 -lSDL2main -lSDL2
+
+Add-ons (as needed): -lSDL2_mixer, -lSDL2_ttf, -lcurl
+
+Windows Dependencies (CRITICAL): -lbcrypt -lpthread -lws2_32 -lcrypt32 -lwldap32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion -lsetupapi -lm
+
+TTF Dependency (CRITICAL): If SDL_ttf is used, you must also add -lrpcrt4.
+
+Flags: -mwindows -static
+
+Final Output
+
+Please provide the complete C source file, Makefile.linux, and Makefile.win as three separate files.
