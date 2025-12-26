@@ -12,5 +12,7 @@ Add project docs and license:
 
 4) Add an executable configure script that checks for essential build tools (gcc, sdl2-config, pkg-config) and libraries, providing installation hints when any are missing
 
+5) Add an AGENTS.md file to help with future AI coders
+
 Commit to a new branch docs/readme-license and open a PR titled:
 docs: add README with build instructions + MIT LICENSE
