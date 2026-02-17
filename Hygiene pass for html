@@ -1,0 +1,14 @@
+Add project docs and license:
+
+1) Create README.md that describes:
+   - What the application is
+   - How to build on Linux (make)
+   - Basic controls 
+   - A short roadmap section.
+
+2) Add LICENSE with MIT License (copyright: Dylan Jones, 2026).
+
+3) Add an AGENTS.md file to help with future AI coders
+
+Commit to a new branch docs/readme-license and open a PR titled:
+docs: add README with build instructions + MIT LICENSE
