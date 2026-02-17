@@ -8,7 +8,7 @@ Add project docs and license:
 
 2) Add LICENSE with MIT License (copyright: Dylan Jones, 2026).
 
-3) Ceate and Verify Makefiles build: no code changes, just docs and license.
+3) Create and Verify Makefiles build: no code changes, just docs and license.
 
 4) Add an executable configure script that checks for essential build tools and libraries, providing installation hints when any are missing
 
